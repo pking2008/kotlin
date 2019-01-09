@@ -14,11 +14,12 @@ class LambdaReturnValueHintsTest : KotlinLightCodeInsightFixtureTestCase() {
 
     fun check(text: String) {
         myFixture.configureByText("A.kt", text.trimIndent())
-        myFixture.testInlays()
 
         if (myFixture.editor.caretModel.offset != 0) {
             myFixture.checkHintType(HintType.LAMBDA_RETURN_EXPRESSION)
         }
+
+        myFixture.testInlays()
     }
 
     fun testSimple() {
@@ -27,6 +28,17 @@ class LambdaReturnValueHintsTest : KotlinLightCodeInsightFixtureTestCase() {
             val x = run {
                 println("foo")
                 <caret><hint text="^run" />1
+            }
+            """
+        )
+    }
+
+    fun testTypeAtStatementEnd() {
+        check(
+            """
+            val x = run {
+                println("foo")
+                false<caret>
             }
             """
         )
