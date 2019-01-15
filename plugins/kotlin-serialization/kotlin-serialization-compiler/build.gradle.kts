@@ -14,6 +14,7 @@ dependencies {
     compile(project(":compiler:plugin-api"))
     compile(project(":compiler:frontend"))
     compile(project(":compiler:backend"))
+    compile(project(":compiler:ir.backend.common"))
     compile(project(":js:js.frontend"))
     compile(project(":js:js.translator"))
 

@@ -5,9 +5,9 @@
 
 package org.jetbrains.kotlin.codegen.inline
 
-import org.jetbrains.kotlin.backend.jvm.codegen.IrExpressionLambda
 import org.jetbrains.kotlin.codegen.AsmUtil
 import org.jetbrains.kotlin.codegen.ClosureCodegen
+import org.jetbrains.kotlin.codegen.IrExpressionLambdaMarker
 import org.jetbrains.kotlin.codegen.StackValue
 import org.jetbrains.kotlin.codegen.coroutines.continuationAsmType
 import org.jetbrains.kotlin.codegen.coroutines.getOrCreateJvmSuspendFunctionView
@@ -413,7 +413,7 @@ class MethodInliner(
 
             private fun getNewIndex(`var`: Int): Int {
                 val lambdaInfo = inliningContext.lambdaInfo
-                if (inliningContext.isInliningLambda && lambdaInfo is IrExpressionLambda) {
+                if (inliningContext.isInliningLambda && lambdaInfo is IrExpressionLambdaMarker) {
                     if (`var` < parameters.argsSizeOnStack) {
                         val capturedParamsStartIndex =
                             if (lambdaInfo.isExtensionLambda) lambdaInfo.invokeMethod.argumentTypes[0].size else 0 //shift by extension
@@ -854,7 +854,7 @@ class MethodInliner(
             return
         }
 
-        if (inliningContext.isInliningLambda && inliningContext.lambdaInfo is IrExpressionLambda) {
+        if (inliningContext.isInliningLambda && inliningContext.lambdaInfo is IrExpressionLambdaMarker) {
             val capturedVars = inliningContext.lambdaInfo.capturedVars
             var offset = parameters.realParametersSizeOnStack
             val map = capturedVars.map {

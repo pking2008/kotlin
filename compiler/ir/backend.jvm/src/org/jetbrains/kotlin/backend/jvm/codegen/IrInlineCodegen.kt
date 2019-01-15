@@ -6,10 +6,7 @@
 package org.jetbrains.kotlin.backend.jvm.codegen
 
 import org.jetbrains.kotlin.builtins.isExtensionFunctionType
-import org.jetbrains.kotlin.codegen.Callable
-import org.jetbrains.kotlin.codegen.JvmKotlinType
-import org.jetbrains.kotlin.codegen.StackValue
-import org.jetbrains.kotlin.codegen.ValueKind
+import org.jetbrains.kotlin.codegen.*
 import org.jetbrains.kotlin.codegen.inline.*
 import org.jetbrains.kotlin.codegen.state.GenerationState
 import org.jetbrains.kotlin.codegen.state.KotlinTypeMapper
@@ -111,8 +108,8 @@ class IrExpressionLambda(
     typeMapper: KotlinTypeMapper,
     isCrossInline: Boolean,
     override val isBoundCallableReference: Boolean,
-    val isExtensionLambda: Boolean
-) : ExpressionLambda(typeMapper, isCrossInline) {
+    override val isExtensionLambda: Boolean
+) : IrExpressionLambdaMarker, ExpressionLambda(typeMapper, isCrossInline) {
 
     override fun isMyLabel(name: String): Boolean {
         //TODO("not implemented")
