@@ -5,9 +5,11 @@
 
 package org.jetbrains.kotlin.idea.parameterInfo
 
+import com.intellij.openapi.editor.impl.EditorImpl
 import org.jetbrains.kotlin.idea.test.KotlinLightCodeInsightFixtureTestCase
 import org.jetbrains.kotlin.idea.test.KotlinLightProjectDescriptor
 import org.jetbrains.kotlin.idea.test.KotlinWithJdkAndRuntimeLightProjectDescriptor
+import org.junit.Assert
 
 class LambdaReturnValueHintsTest : KotlinLightCodeInsightFixtureTestCase() {
     override fun getProjectDescriptor(): KotlinLightProjectDescriptor = KotlinWithJdkAndRuntimeLightProjectDescriptor.INSTANCE
@@ -20,6 +22,21 @@ class LambdaReturnValueHintsTest : KotlinLightCodeInsightFixtureTestCase() {
         }
 
         myFixture.testInlays()
+        checkLineExtensions()
+    }
+
+    fun checkLineExtensions() {
+        myFixture.doHighlighting()
+
+        val offset = myFixture.editor.caretModel.offset
+        Assert.assertTrue("Caret position is expected", offset > 0)
+
+        val caretLineNumber = myFixture.editor.document.getLineNumber(offset)
+
+        (myFixture.editor as EditorImpl).processLineExtensions(caretLineNumber) { lineExtensionInfo ->
+            Assert.assertEquals("bebebe", lineExtensionInfo.text)
+            true
+        }
     }
 
     fun testSimple() {
@@ -49,7 +66,7 @@ class LambdaReturnValueHintsTest : KotlinLightCodeInsightFixtureTestCase() {
             """
             val x = run {
                 var s = "abc"
-                <hint text="^run" />s.length
+                s.length<caret><line text="^run" />
             }
             """
         )

@@ -10,7 +10,7 @@ import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.*
+import com.intellij.psi.PsiManager
 import org.jetbrains.kotlin.idea.KotlinLanguage
 
 class ReturnHintLinePainter : EditorLinePainter() {
@@ -24,7 +24,7 @@ class ReturnHintLinePainter : EditorLinePainter() {
         val editors = EditorFactory.getInstance().getEditors(doc)
         if (editors.isEmpty()) return nullResult(114, lineNumber)
 
-        val hint = getReturnHintText(project, lineNumber, editors, doc) ?: return nullResult(10, lineNumber)
+        val hint = getReturnHintText(project, lineNumber, editors.first(), doc) ?: return nullResult(10, lineNumber)
 
         val hintLineInfo = LineExtensionInfo(" $hint", TextAttributes())
         return listOf(hintLineInfo)
@@ -33,7 +33,7 @@ class ReturnHintLinePainter : EditorLinePainter() {
     private fun getReturnHintText(
         project: Project,
         lineNumber: Int,
-        editors: Array<Editor>,
+        editor: Editor,
         doc: Document
     ): String? {
         val lineEndOffset = try {
@@ -42,8 +42,7 @@ class ReturnHintLinePainter : EditorLinePainter() {
             return nullResult(0, lineNumber)
         }
 
-        val rangeHint = KotlinCodeHintsModel.getInstance(project)
-            .getExtensionInfo(editors.first(), lineEndOffset)
+        val rangeHint = KotlinCodeHintsModel.getInstance(project).getExtensionInfo(editor, lineEndOffset)
         if (rangeHint != null) {
             return rangeHint
         }
