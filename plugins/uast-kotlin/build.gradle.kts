@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
@@ -70,4 +71,10 @@ testsJar {}
 
 projectTest {
     workingDir = rootDir
+}
+
+if (Platform.P191.orHigher()) {
+    tasks.withType<KotlinCompile> {
+        kotlinOptions.freeCompilerArgs += "-Xjvm-default=compatibility"
+    }
 }
