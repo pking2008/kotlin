@@ -52,23 +52,29 @@ class KotlinGradleIT : BaseGradleIT() {
 
     @Test
     fun testRunningInDifferentDir() {
+        val options = defaultBuildOptions().copy(withDaemon = false)
         val wd0 = workingDir
         val wd1 = File(wd0, "subdir").apply { mkdirs() }
         workingDir = wd1
         val project1 = Project("kotlinJavaProject")
 
-        project1.build("assemble") {
+        project1.build("assemble", options = options) {
             assertSuccessful()
         }
 
         val wd2 = createTempDir("testRunningInDifferentDir")
         wd1.copyRecursively(wd2)
         wd1.deleteRecursively()
-        assert(!wd1.exists())
+        if (wd1.exists()) {
+            val files = buildString {
+                wd1.walk().forEach { appendln("  " + it.relativeTo(wd1).path) }
+            }
+            error("Some files in $wd1 were not removed:\n$files")
+        }
         wd0.setWritable(false)
         workingDir = wd2
 
-        project1.build("test") {
+        project1.build("test", options = options) {
             assertSuccessful()
         }
     }
